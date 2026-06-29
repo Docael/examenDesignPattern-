@@ -1,0 +1,97 @@
+### ============================================================
+###  badwallet-api (8080) + payment-service (8081) - tests
+###  Ordre conseille : 1) seed wallets  2) seed factures auto au demarrage
+### ============================================================
+
+### 1. Injecter les portefeuilles de demo (feature/wallet-seeder)
+POST http://localhost:8080/wallets/seed
+
+### 2. Creer un portefeuille (feature/wallet-creation)
+POST http://localhost:8080/wallets
+Content-Type: application/json
+
+{
+  "phoneNumber": "771112233",
+  "email": "salam@ism.sn",
+  "initialBalance": 25000,
+  "currency": "XOF"
+}
+
+### 3. Lister les portefeuilles (feature/wallet-listing)
+GET http://localhost:8080/wallets
+
+### 4. Consulter un portefeuille (feature/wallet-consultation)
+GET http://localhost:8080/wallets/770000001
+
+### 5. Consulter le solde
+GET http://localhost:8080/wallets/770000001/balance
+
+### 6. Depot (feature/transaction-deposit)
+POST http://localhost:8080/deposit/770000003
+Content-Type: application/json
+
+{
+  "amount": 10000,
+  "paymentMethod": "WAVE"
+}
+
+### 7. Retrait (feature/transaction-withdraw)
+POST http://localhost:8080/withdraw
+Content-Type: application/json
+
+{
+  "phoneNumber": "770000001",
+  "amount": 5000
+}
+
+### 8. Transfert (feature/transaction-transfer)
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "senderPhone": "770000002",
+  "receiverPhone": "770000001",
+  "amount": 7000
+}
+
+### 9. Paiement direct d'un service (feature/payment-services)
+POST http://localhost:8080/pay
+Content-Type: application/json
+
+{
+  "phoneNumber": "770000002",
+  "serviceName": "CANAL+",
+  "amount": 15000
+}
+
+### 10. Consulter les factures via proxy (feature/proxy-factures)
+GET http://localhost:8080/external/factures/current?phone=770000001
+
+### 11. Filtrer par service
+GET http://localhost:8080/external/factures/current?phone=770000001&unite=SENELEC
+
+### 12. Payer des factures (wallet -> payment-service)
+POST http://localhost:8080/pay-factures
+Content-Type: application/json
+
+{
+  "phoneNumber": "770000001",
+  "serviceName": "SENELEC",
+  "factureReferences": ["FAC-SEN-001", "FAC-SDE-001"]
+}
+
+### 13. Historique des transactions (feature/transaction-history)
+GET http://localhost:8080/wallets/770000001/transactions
+
+### ============================================================
+###  Appels directs au payment-service (8081)
+### ============================================================
+
+### Factures du mois courant
+GET http://localhost:8081/factures/current?walletCode=WAL-DEMO0001
+
+### Factures par references
+GET http://localhost:8081/factures?references=FAC-SEN-001&references=FAC-SDE-001
+
+### Factures sur une periode
+GET http://localhost:8081/factures/periode?walletCode=WAL-DEMO0001&start=2026-01-01&end=2026-12-31
