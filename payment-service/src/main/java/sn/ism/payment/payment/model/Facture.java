@@ -32,10 +32,10 @@ public class Facture {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false)
+    @Column(name = "facture_month", nullable = false)
     private Integer month;
 
-    @Column(nullable = false)
+    @Column(name = "facture_year", nullable = false)
     private Integer year;
 
     @Enumerated(EnumType.STRING)
